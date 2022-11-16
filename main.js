@@ -1,18 +1,26 @@
 import { ToDo } from "./todo.js";
 
 let todos = [];
+let todoObjects = [];
 
 function updateToDoListOnScreen() {
   const todoListElement = document.getElementById("todolist");
-
-  // Liste leeren
+  
+ // Liste leeren
   todoListElement.innerHTML = "";
+  let allTodosForLocalstorage = [];
+  let i = 0;
 
-  // ToDo's einfügen
-  for (const todo of todos) {
+ // ToDo's einfügen
+  for (const todo of todos.sort((a,b) => a.titel.localeCompare(b.titel))) {
     const toDoListEntry = todo.element();
     todoListElement.appendChild(toDoListEntry);
+    allTodosForLocalstorage[i] = { 'titel': todo.titel, 'erledigt': todo.erledigt}
+    i++;
   }
+
+  localStorage.clear;
+  localStorage.setItem('todos', JSON.stringify(allTodosForLocalstorage));
 
   // offene ToDo's
   const offeneToDos = todos.filter((offen) => !offen.erledigt);
@@ -40,7 +48,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
       todo.addEventListener("changeCheck", (e) => {
         const index = todos.indexOf(e.target);
-        todo.erledigt = true;
+        if(todo.erledigt)
+        {
+          todo.erledigt = false;
+        }
+        else if(!todo.erledigt)
+        {
+          todo.erledigt = true
+        }
         updateToDoListOnScreen();
       });
 
